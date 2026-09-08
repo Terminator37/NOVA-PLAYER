@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="NOVA PLAYER V3.2 — nueva generación: experiencia musical, cola inteligente, biblioteca multimedia y audio avanzado.">
+  <title>NOVA PLAYER V3.2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <div class="grid-overlay"></div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-orb"><span></span></div>
+        <div>
+          <div class="brand-title">NOVA PLAYER</div>
+          <div class="brand-subtitle">MUSIC & MULTIMEDIA • V3.2</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" id="settingsButton" type="button" title="Personalizar NOVA PLAYER" aria-label="Personalizar NOVA PLAYER">⚙</button>
+        <button class="icon-button" id="addButton" type="button" title="Añadir archivos" aria-label="Añadir archivos">＋</button>
+        <input id="fileInput" type="file" accept="audio/*,video/*" multiple hidden>
+        <input id="folderInput" type="file" accept="audio/*,video/*" webkitdirectory directory multiple hidden>
+        <input id="subtitleInput" type="file" accept=".srt,.vtt,.ass,text/vtt,application/x-subrip" hidden>
+        <input id="audioTrackInput" type="file" accept="audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.opus" hidden>
+      </div>
+    </header>
+
+    <section class="hero-grid">
+      <section class="player-card glass">
+        <div class="card-header">
+          <div>
+            <span class="status-pill" id="statusPill"><i></i> READY</span>
+            <span class="section-label">NOW PLAYING</span>
+          </div>
+          <div class="header-controls">
+            <button class="icon-button small" id="lockButton" type="button" title="Bloquear controles" aria-label="Bloquear controles">⌁</button>
+            <button class="icon-button small" id="fullscreenButton" type="button" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
+            <button class="icon-button small nova-v3-queue-trigger" id="queueButton" type="button" title="Abrir cola inteligente" aria-label="Abrir cola inteligente">☷</button>
+          </div>
+        </div>
+
+        <div class="media-stage" id="mediaContainer">
+          <div class="fullscreen-topbar" id="fullscreenTopbar" hidden>
+            <button class="fs-control" id="fsBackButton" type="button" aria-label="Salir de pantalla completa">←</button>
+            <div class="fs-title" id="fsTitle">NOVA PLAYER</div>
+            <button class="fs-control" id="fsLockButton" type="button" aria-label="Bloquear controles">⌁</button>
+          </div>
+          <div class="media-glow"></div>
+
+          <div class="empty-media" id="emptyMedia">
+            <div class="empty-orb">◈</div>
+            <strong>Tu biblioteca está lista</strong>
+            <span>Añade música o vídeos para comenzar</span>
+            <div class="empty-actions"><button class="primary-button" id="emptyAddButton" type="button">＋ Añadir archivos</button><button class="secondary-button" id="emptyFolderButton" type="button">▣ Añadir carpeta</button></div>
+          </div>
+
+          <video id="videoPlayer" playsinline webkit-playsinline preload="metadata" hidden></video>
+          <audio id="externalAudio" preload="auto"></audio>
+
+          <div class="audio-visual" id="audioArtwork" hidden aria-label="Visualizador de audio">
+            <div class="audio-visual-glow" aria-hidden="true"></div>
+            <div class="nova-audio-cover" id="novaAudioCover" aria-hidden="true">
+              <img id="novaAudioCoverImage" alt="Portada del álbum">
+              <div class="nova-audio-cover-fallback" id="novaAudioCoverFallback">♫</div>
+            </div>
+            <div class="nova-audio-meta" id="novaAudioMeta" aria-hidden="true">
+              <strong id="novaAudioArtist">NOVA PLAYER</strong>
+              <span id="novaAudioAlbum">Colección local</span>
+            </div>
+            <div class="audio-spectrum" id="audioWaveform" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="video-thumb" id="videoThumb" hidden>
+            <img id="videoThumbImage" alt="Miniatura del vídeo">
+          </div>
+          <button class="unlock-button" id="unlockButton" type="button" hidden>⌁ Desbloquear</button>
+          <div class="gesture-hint" id="gestureHint" aria-hidden="true"></div>
+          <div class="skip-indicator" id="skipIndicator" aria-hidden="true"></div>
+          <div class="media-scanline"></div>
+        </div>
+
+        <div class="track-info">
+          <div class="track-copy">
+            <div class="track-type" id="mediaType">SIN ARCHIVO</div>
+            <h1 id="mediaTitle">Selecciona un archivo</h1>
+            <div class="track-subline" id="trackSubline">Esperando reproducción</div>
+          </div>
+          <button class="favorite-button" id="favoriteButton" type="button" title="Favorito" aria-label="Favorito">♡</button>
+        </div>
+
+        <div class="track-tools">
+          <button class="secondary-button lyrics-trigger" id="lyricsButton" type="button" hidden>♫ Letras</button>
+        </div>
+        <section class="lyrics-panel" id="lyricsPanel" hidden aria-label="Letras de la canción">
+          <div class="lyrics-head">
+            <div><span class="section-label">NOVA LYRICS</span><strong id="lyricsTitle">Letras</strong></div>
+            <button class="tiny-button" id="lyricsCloseButton" type="button">Ocultar</button>
+          </div>
+          <div class="lyrics-content" id="lyricsContent"></div>
+          <div class="lyrics-empty" id="lyricsEmpty">Añade las letras desde Detalles del archivo.</div>
+        </section>
+
+        <div class="timeline">
+          <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progreso">
+          <div class="time-row">
+            <span id="currentTime">00:00</span>
+            <span id="duration">00:00</span>
+          </div>
+        </div>
+
+        <div class="transport">
+          <button class="control-button secondary" id="shuffleButton" type="button" title="Aleatorio" aria-label="Aleatorio">⌘</button>
+          <button class="control-button" id="previousButton" type="button" title="Anterior" aria-label="Anterior">◀◀</button>
+          <button class="control-button secondary" id="rewindButton" type="button" title="Retroceder 10 segundos" aria-label="Retroceder 10 segundos">−10</button>
+          <button class="play-button" id="playButton" type="button" title="Reproducir" aria-label="Reproducir">▶</button>
+          <button class="control-button secondary" id="forwardButton" type="button" title="Avanzar 10 segundos" aria-label="Avanzar 10 segundos">+10</button>
+          <button class="control-button" id="nextButton" type="button" title="Siguiente" aria-label="Siguiente">▶▶</button>
+          <button class="control-button secondary" id="repeatButton" type="button" title="Repetición: desactivada" aria-label="Repetición">↻</button>
+        </div>
+
+        <div class="volume-row">
+          <button class="volume-icon-button" id="muteButton" type="button" title="Silenciar" aria-label="Silenciar">◖</button>
+          <input id="volumeBar" type="range" min="0" max="1" value="1" step="0.01" aria-label="Volumen">
+          <span id="volumeValue">100%</span>
+          <button class="speed-button" id="speedButton" type="button" title="Velocidad de reproducción" aria-label="Velocidad de reproducción">1×</button>
+          <button class="timer-button" id="sleepTimerButton" type="button" title="Temporizador de sueño" aria-label="Temporizador de sueño">◷</button>
+        </div>
+
+        <section class="smart-playback" id="smartPlayback" hidden aria-label="Reproducción inteligente">
+          <div class="smart-playback-head">
+            <div>
+              <span class="section-label">NOVA SMART</span>
+              <strong>Reproducción inteligente</strong>
+            </div>
+            <button class="smart-close" id="sleepTimerClose" type="button" aria-label="Cerrar">×</button>
+          </div>
+          <div class="smart-timer-status" id="sleepTimerStatus">Temporizador desactivado</div>
+          <div class="smart-timer-grid">
+            <button type="button" data-sleep-min="15">15 min</button>
+            <button type="button" data-sleep-min="30">30 min</button>
+            <button type="button" data-sleep-min="45">45 min</button>
+            <button type="button" data-sleep-min="60">60 min</button>
+            <button type="button" data-sleep-min="90">90 min</button>
+            <button type="button" data-sleep-min="120">120 min</button>
+          </div>
+          <div class="smart-timer-actions">
+            <button class="smart-end-current" id="sleepEndCurrent" type="button">⏹ Al terminar esta pista</button>
+            <button class="smart-cancel" id="sleepTimerCancel" type="button">Cancelar temporizador</button>
+          </div>
+        </section>
+
+        <section class="audio-panel" id="audioPanel" hidden aria-label="Audio avanzado">
+          <div class="audio-panel-header">
+            <div>
+              <span class="section-label">AUDIO LAB</span>
+              <strong>Audio avanzado</strong>
+            </div>
+            <div class="audio-panel-actions">
+              <button class="advanced-toggle" id="advancedAudioToggle" type="button" aria-expanded="false" aria-controls="advancedAudioBody">
+                <span>Mostrar</span><i aria-hidden="true">⌄</i>
+              </button>
+              <button class="audio-reset" id="audioResetButton" type="button">Restablecer</button>
+            </div>
+          </div>
+
+          <div class="advanced-audio-body" id="advancedAudioBody" hidden>
+          <div class="audio-presets">
+            <button class="preset-button active" data-preset="flat" type="button">Flat</button>
+            <button class="preset-button" data-preset="bass" type="button">Bass+</button>
+            <button class="preset-button" data-preset="vocal" type="button">Vocal</button>
+            <button class="preset-button" data-preset="treble" type="button">Treble+</button>
+            <button class="preset-button" data-preset="night" type="button">Night</button>
+          </div>
+
+          <div class="audio-slider-grid">
+            <label><span>Graves <b id="bassValue">0 dB</b></span><input id="bassBar" type="range" min="-12" max="12" value="0" step="1"></label>
+            <label><span>Agudos <b id="trebleValue">0 dB</b></span><input id="trebleBar" type="range" min="-12" max="12" value="0" step="1"></label>
+            <label><span>Balance <b id="balanceValue">Centro</b></span><input id="balanceBar" type="range" min="-1" max="1" value="0" step="0.01"></label>
+          </div>
+
+          <div class="audio-status-row">
+            <span id="audioEngineStatus"><i></i> Motor de audio listo</span>
+            <span id="visualizerMode">VISUALIZER • LIVE</span>
+          </div>
+          </div>
+        </section>
+        <section class="equalizer-panel" id="equalizerPanel" hidden aria-label="Ecualizador avanzado">
+          <div class="equalizer-header">
+            <div>
+              <span class="section-label">AUDIO LAB</span>
+              <strong>Ecualizador avanzado</strong>
+            </div>
+            <button class="audio-reset" id="equalizerResetButton" type="button">Restablecer</button>
+          </div>
+
+          <div class="eq-master-row">
+            <label class="eq-master-control"><span>Preamp <b id="preampValue">0 dB</b></span><input id="preampBar" type="range" min="-12" max="12" value="0" step="0.5"></label>
+            <div class="eq-master-info"><span id="eqProfileStatus">Perfil: Flat</span><span>10 bandas</span></div>
+          </div>
+
+          <div class="eq-bands" id="eqBands">
+            <label class="eq-band"><span>31</span><input data-eq-index="0" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>62</span><input data-eq-index="1" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>125</span><input data-eq-index="2" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>250</span><input data-eq-index="3" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>500</span><input data-eq-index="4" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>1k</span><input data-eq-index="5" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>2k</span><input data-eq-index="6" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>4k</span><input data-eq-index="7" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>8k</span><input data-eq-index="8" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+            <label class="eq-band"><span>16k</span><input data-eq-index="9" type="range" min="-12" max="12" value="0" step="1"><b>0</b></label>
+          </div>
+
+          <div class="eq-footer-row">
+            <span id="eqEngineStatus"><i></i> Ecualizador listo</span>
+            <span>Los cambios se guardan automáticamente</span>
+          </div>
+        </section>
+
+        <section class="media-options-panel" id="mediaOptionsPanel" hidden aria-label="Subtítulos y pistas de audio">
+          <div class="media-options-header">
+            <div>
+              <span class="section-label">MEDIA OPTIONS</span>
+              <strong>Subtítulos y audio</strong>
+            </div>
+            <span class="options-badge" id="mediaOptionsStatus">VIDEO</span>
+          </div>
+
+          <div class="option-block">
+            <div class="option-title"><span>💬</span><div><strong>Subtítulos</strong><small id="subtitleStatus">Sin subtítulos cargados</small></div></div>
+            <div class="option-actions">
+              <button class="option-button" id="subtitleLoadButton" type="button">＋ Cargar</button>
+              <button class="option-button" id="subtitleToggleButton" type="button" disabled>Subtítulos: OFF</button>
+              <button class="option-button danger-soft" id="subtitleRemoveButton" type="button" disabled>×</button>
+            </div>
+            <div class="subtitle-settings">
+              <label><span>Tamaño</span><select id="subtitleSizeSelect"><option value="small">Pequeño</option><option value="medium" selected>Medio</option><option value="large">Grande</option><option value="xlarge">Muy grande</option></select></label>
+              <label class="check-option"><input id="subtitleBackgroundToggle" type="checkbox" checked><span>Fondo</span></label>
+            </div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-title"><span>🎵</span><div><strong>Pista de audio</strong><small id="audioTrackStatus">Pista original del vídeo</small></div></div>
+            <div class="option-actions">
+              <button class="option-button" id="audioTrackLoadButton" type="button">＋ Cargar pista</button>
+              <button class="option-button danger-soft" id="audioTrackRemoveButton" type="button" disabled>× Quitar</button>
+            </div>
+            <div class="audio-track-note" id="audioTrackNote">Puedes cargar una pista de audio externa para sustituir el audio original del vídeo y mantenerla sincronizada.</div>
+          </div>
+        </section>
+
+      </section>
+
+      <aside class="library-card glass">
+        <div class="library-header">
+          <div>
+            <span class="section-label">YOUR LIBRARY</span>
+            <h2>Biblioteca multimedia</h2>
+          </div>
+          <span class="count-badge" id="playlistCount">0</span>
+        </div>
+
+        <div class="library-tabs" role="tablist" aria-label="Filtro de biblioteca">
+          <button class="library-tab active" data-filter="all" type="button">Todos</button>
+          <button class="library-tab" data-filter="audio" type="button">♫ Audio</button>
+          <button class="library-tab" data-filter="video" type="button">▣ Vídeo</button>
+          <button class="library-tab" data-filter="favorites" type="button">♥ Favoritos</button>
+          <button class="library-tab" data-filter="history" type="button">◷ Historial</button>
+          <button class="library-tab" data-filter="rated" type="button">★ Valorados</button>
+        </div>
+
+        <div class="library-tools v2-tools">
+          <div class="library-quick-actions">
+            <button class="library-action-button" id="addFilesButton" type="button">＋ Archivos</button>
+            <button class="library-action-button" id="addFolderButton" type="button">▣ Carpeta</button>
+          </div>
+          <div class="search-box">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Buscar en la biblioteca..." autocomplete="off">
+          </div>
+          <div class="library-actions">
+            <button class="tiny-button select-mode-button" id="selectionModeButton" type="button">☑ Seleccionar</button>
+            <select id="sortSelect" class="sort-select" aria-label="Ordenar biblioteca">
+              <option value="added-desc">Más recientes</option>
+              <option value="added-asc">Más antiguos</option>
+              <option value="name-asc">Nombre A–Z</option>
+              <option value="name-desc">Nombre Z–A</option>
+              <option value="size-desc">Mayor tamaño</option>
+              <option value="size-asc">Menor tamaño</option>
+              <option value="played-desc">Más reproducidos</option>
+              <option value="duration-desc">Mayor duración</option>
+              <option value="rating-desc">Mayor valoración</option>
+              <option value="rating-asc">Menor valoración</option>
+            </select>
+            <button class="clear-button" id="clearButton" type="button">Limpiar</button>
+          </div>
+        </div>
+
+        <section class="collections-panel" aria-label="Colecciones y playlists">
+          <div class="collections-head">
+            <div>
+              <span class="section-label">NOVA COLLECTIONS</span>
+              <strong>Playlists</strong>
+            </div>
+            <button class="tiny-button" id="createPlaylistButton" type="button">＋ Nueva</button>
+          </div>
+          <div class="collections-row">
+            <select id="playlistSelect" class="playlist-select" aria-label="Seleccionar playlist">
+              <option value="">Todas las canciones</option>
+            </select>
+            <button class="tiny-button" id="addCurrentToPlaylistButton" type="button" disabled>＋ Actual</button>
+            <button class="tiny-button" id="renamePlaylistButton" type="button" disabled>✎</button>
+            <button class="tiny-button" id="duplicatePlaylistButton" type="button" disabled>⧉</button>
+            <button class="tiny-button danger" id="deletePlaylistButton" type="button" disabled>×</button>
+          </div>
+          <div class="folder-row">
+            <select id="folderSelect" class="playlist-select" aria-label="Filtrar por carpeta">
+              <option value="">Todas las carpetas</option>
+            </select>
+            <button class="tiny-button" id="addVisibleToPlaylistButton" type="button" disabled>＋ Visibles</button>
+          </div>
+          <div class="collection-summary" id="collectionSummary">Crea una playlist o selecciona una carpeta para organizar tu biblioteca.</div>
+        </section>
+
+        <div class="bulk-toolbar" id="bulkToolbar" hidden>
+          <div class="bulk-selection"><strong id="selectedCount">0</strong><span>seleccionados</span></div>
+          <div class="bulk-actions">
+            <button class="tiny-button" id="selectVisibleButton" type="button">☑ Visibles</button>
+            <button class="tiny-button" id="clearSelectionButton" type="button">Limpiar</button>
+            <button class="tiny-button" id="bulkFavoriteButton" type="button">♥ Favoritos</button>
+            <button class="tiny-button" id="bulkPlaylistButton" type="button">＋ Playlist</button>
+            <button class="tiny-button danger" id="bulkDeleteButton" type="button">× Eliminar</button>
+          </div>
+        </div>
+
+        <div class="library-stats">
+          <span id="libraryMeta">0 archivos</span>
+          <span id="librarySize">0 B</span>
+        </div>
+
+        <div class="playlist" id="playlist">
+          <div class="playlist-empty">
+            <span>◌</span>
+            <p>Cargando biblioteca…</p>
+            <small>Preparando tu espacio multimedia.</small>
+          </div>
+        </div>
+
+        <div class="library-footer">
+          <span><i class="live-dot"></i> NOVA LIBRARY</span>
+          <span id="libraryHint">Biblioteca guardada en este dispositivo</span>
+        </div>
+      </aside>
+    </section>
+
+    <aside class="nova-v3-queue" id="novaQueue" hidden aria-label="Cola inteligente">
+      <div class="nova-v3-queue-backdrop" id="novaQueueBackdrop"></div>
+      <section class="nova-v3-queue-panel" role="dialog" aria-modal="true" aria-labelledby="novaQueueTitle">
+        <div class="nova-v3-queue-head">
+          <div>
+            <span class="section-label">NOVA FLOW • V3.2</span>
+            <h3 id="novaQueueTitle">Cola inteligente</h3>
+            <p id="novaQueueSummary">Tu próxima reproducción, en orden.</p>
+          </div>
+          <button class="icon-button small" id="queueCloseButton" type="button" aria-label="Cerrar cola">×</button>
+        </div>
+        <div class="nova-v3-queue-now" id="queueNowPlaying">
+          <div class="queue-now-art" id="queueNowArt">♫</div>
+          <div><span>AHORA</span><strong id="queueNowTitle">Sin reproducción</strong><small id="queueNowMeta">Añade música a tu biblioteca</small></div>
+        </div>
+        <div class="nova-v3-queue-actions">
+          <button type="button" id="queuePlayNextButton">▶ Reproducir siguiente</button>
+          <button type="button" id="queueShuffleButton">⌘ Mezclar</button>
+        </div>
+        <div class="nova-v3-queue-list" id="novaQueueList"></div>
+      </section>
+    </aside>
+
+    <aside class="nova-mini-player" id="novaMiniPlayer" hidden aria-label="Mini reproductor">
+      <button class="mini-art" id="miniArt" type="button" aria-label="Volver al reproductor">
+        <span id="miniArtIcon">♫</span>
+      </button>
+      <button class="mini-info" id="miniInfo" type="button" aria-label="Volver al reproductor">
+        <span class="mini-type" id="miniType">AUDIO</span>
+        <strong id="miniTitle">Selecciona un archivo</strong>
+        <span class="mini-progress" aria-hidden="true"><i id="miniProgressFill"></i></span>
+      </button>
+      <button class="mini-control mini-play" id="miniPlayButton" type="button" aria-label="Reproducir o pausar">▶</button>
+      <button class="mini-control mini-close" id="miniCloseButton" type="button" aria-label="Cerrar mini reproductor">×</button>
+    </aside>
+
+    <nav class="mobile-app-nav" id="mobileAppNav" aria-label="Navegación rápida">
+      <button type="button" class="app-nav-item active" data-nav="home"><span>⌂</span><small>Inicio</small></button>
+      <button type="button" class="app-nav-item" data-nav="library"><span>▤</span><small>Biblioteca</small></button>
+      <button type="button" class="app-nav-item" data-nav="audio"><span>♫</span><small>Audio</small></button>
+      <button type="button" class="app-nav-item" data-nav="video"><span>▣</span><small>Vídeo</small></button>
+      <button type="button" class="app-nav-item" data-nav="favorites"><span>♥</span><small>Favoritos</small></button>
+    </nav>
+
+    <footer class="footer">
+      <span>NOVA PLAYER</span>
+      <span>Biblioteca • Favoritos • Historial</span>
+      <span>V3.1</span>
+    </footer>
+  </main>
+
+  <div class="details-modal" id="detailsModal" hidden aria-hidden="true">
+    <div class="details-backdrop" id="detailsBackdrop"></div>
+    <section class="details-dialog" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+      <div class="details-dialog-head">
+        <div><span class="section-label">NOVA FILE MANAGER</span><h3 id="detailsTitle">Detalles del archivo</h3></div>
+        <button class="icon-button small" id="detailsCloseButton" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <div class="details-icon" id="detailsIcon">▣</div>
+      <div class="details-name-row"><strong id="detailsName">Archivo</strong><button class="tiny-button" id="detailsRenameButton" type="button">✎ Renombrar</button></div>
+      <div class="details-grid" id="detailsGrid"></div>
+      <section class="details-metadata-editor" aria-label="Metadatos personales">
+        <div class="metadata-field">
+          <div class="metadata-label"><span>★ Valoración</span><strong id="detailsRatingValue">Sin valorar</strong></div>
+          <div class="rating-stars" id="detailsRatingStars" role="group" aria-label="Valoración de 1 a 5 estrellas">
+            <button type="button" data-rating="1" aria-label="1 estrella">☆</button>
+            <button type="button" data-rating="2" aria-label="2 estrellas">☆</button>
+            <button type="button" data-rating="3" aria-label="3 estrellas">☆</button>
+            <button type="button" data-rating="4" aria-label="4 estrellas">☆</button>
+            <button type="button" data-rating="5" aria-label="5 estrellas">☆</button>
+          </div>
+        </div>
+        <div class="metadata-field-row nova-id-fields">
+          <label class="metadata-field"><span class="metadata-label">Título</span><input id="detailsTitleInput" type="text" maxlength="180" placeholder="Título de la canción"></label>
+          <label class="metadata-field"><span class="metadata-label">Artista</span><input id="detailsArtistInput" type="text" maxlength="120" placeholder="Artista"></label>
+        </div>
+        <label class="metadata-field"><span class="metadata-label">Álbum</span><input id="detailsAlbumInput" type="text" maxlength="120" placeholder="Álbum"></label>
+        <label class="metadata-field"><span class="metadata-label">Etiquetas</span><input id="detailsTagsInput" type="text" maxlength="180" placeholder="ej. favoritos, música, viajes"></label>
+        <label class="metadata-field"><span class="metadata-label">Nota personal</span><textarea id="detailsNoteInput" maxlength="500" rows="3" placeholder="Añade una nota sobre este archivo..."></textarea></label>
+        <label class="metadata-field"><span class="metadata-label">Letras</span><textarea id="detailsLyricsInput" maxlength="12000" rows="7" placeholder="Pega aquí las letras de la canción..."></textarea></label>
+        <button class="primary-button metadata-save-button" id="detailsSaveMetadataButton" type="button">✓ Guardar metadatos</button>
+      </section>
+      <div class="details-dialog-actions">
+        <button class="secondary-button" id="detailsFavoriteButton" type="button">♡ Favorito</button>
+        <button class="primary-button" id="detailsPlayButton" type="button">▶ Reproducir</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="settings-modal" id="settingsModal" hidden aria-hidden="true">
+    <div class="settings-backdrop" id="settingsBackdrop"></div>
+    <section class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="settings-head">
+        <div><span class="section-label">NOVA STUDIO • V3.2</span><h3 id="settingsTitle">Personaliza tu reproductor</h3><p>Haz que NOVA PLAYER se sienta tuyo.</p></div>
+        <button class="icon-button small" id="settingsCloseButton" type="button" aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title"><strong>Color de NOVA</strong><span id="accentName">Violet</span></div>
+        <div class="accent-grid" id="accentGrid">
+          <button class="accent-choice active" data-accent="violet" aria-label="Violet"><i></i><span>Violet</span></button>
+          <button class="accent-choice" data-accent="cyan" aria-label="Cyan"><i></i><span>Cyan</span></button>
+          <button class="accent-choice" data-accent="emerald" aria-label="Emerald"><i></i><span>Emerald</span></button>
+          <button class="accent-choice" data-accent="crimson" aria-label="Crimson"><i></i><span>Crimson</span></button>
+          <button class="accent-choice" data-accent="amber" aria-label="Amber"><i></i><span>Amber</span></button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title"><strong>Tema</strong><span id="themeName">NOVA Dark</span></div>
+        <div class="choice-row" id="themeChoices">
+          <button class="setting-choice active" data-theme="dark" type="button"><b>◐</b><span>NOVA Dark</span><small>Equilibrado</small></button>
+          <button class="setting-choice" data-theme="amoled" type="button"><b>◑</b><span>AMOLED</span><small>Negro profundo</small></button>
+          <button class="setting-choice" data-theme="midnight" type="button"><b>◒</b><span>Midnight</span><small>Azul nocturno</small></button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title"><strong>Densidad de interfaz</strong><span id="densityName">Estándar</span></div>
+        <div class="segmented" id="densityChoices">
+          <button class="active" data-density="compact" type="button">Compacta</button>
+          <button data-density="standard" type="button">Estándar</button>
+          <button data-density="spacious" type="button">Amplia</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title"><strong>Visualizador</strong><span id="visualizerName">Órbita</span></div>
+        <div class="choice-row visualizer-choices" id="visualizerChoices">
+          <button class="setting-choice active" data-visualizer="orbit" type="button"><b>◎</b><span>Órbita</span><small>Dinámico</small></button>
+          <button class="setting-choice" data-visualizer="bars" type="button"><b>▥</b><span>Barras</span><small>Clásico</small></button>
+          <button class="setting-choice" data-visualizer="minimal" type="button"><b>·</b><span>Minimal</span><small>Discreto</small></button>
+        </div>
+      </div>
+
+      <div class="settings-section settings-toggles">
+        <label class="toggle-row"><span><strong>Animaciones</strong><small>Transiciones y efectos visuales</small></span><input id="motionToggle" type="checkbox" checked><i></i></label>
+        <label class="toggle-row"><span><strong>Recordar sección</strong><small>Volver a la última pestaña abierta</small></span><input id="rememberSectionToggle" type="checkbox" checked><i></i></label>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title"><strong>Al iniciar</strong><span>Preferencia</span></div>
+        <select class="settings-select" id="startupSelect">
+          <option value="home">Inicio</option><option value="library">Biblioteca</option><option value="audio">Audio</option><option value="video">Vídeo</option><option value="favorites">Favoritos</option>
+        </select>
+      </div>
+
+      <div class="settings-actions">
+        <button class="secondary-button" id="resetAppearanceButton" type="button">Restablecer apariencia</button>
+        <button class="primary-button" id="settingsDoneButton" type="button">✓ Listo</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
