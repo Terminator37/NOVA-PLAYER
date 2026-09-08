@@ -5,13 +5,25 @@
   "display": "standalone",
   "name": "Nova Player",
   "orientation": "any",
-  "scope": "/",
+  "scope": "./",
   "short_name": "NOVA",
-  "start_url": "/",
-  "theme_color": "#070a12",
-  "lang": "es",
+  "start_url": "./",
+  "theme_color": "#070A12",
   "categories": [
     "multimedia design",
     "music"
+  ],
+  "lang": "es",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
