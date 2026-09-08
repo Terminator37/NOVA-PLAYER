@@ -1,0 +1,17 @@
+{
+  "background_color": "#ffffff",
+  "description": "NOVA PLAYER V3.2 — nueva generación: experiencia musical, cola inteligente, biblioteca multimedia y audio avanzado.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Nova Player",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "NOVA",
+  "start_url": "/",
+  "theme_color": "#070a12",
+  "lang": "es",
+  "categories": [
+    "multimedia design",
+    "music"
+  ]
+}
